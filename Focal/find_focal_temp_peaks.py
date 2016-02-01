@@ -89,7 +89,7 @@ def find_focal_temp_peaks(year='', month='', mday=''):
 #
 #--- print out the data
 #
-    fo    = open('/mta/Script/Weekly/Focal/focal_temp_list', 'w')
+    fo    = open('/data/mta/Script/Weekly/Focal/focal_temp_list', 'w')
     for ent in peak_list:
         vtime = float(ent[0])
         ltime = str(vtime)
@@ -636,6 +636,10 @@ if __name__ == "__main__":
         year  = int(float(sys.argv[1]))
         month = int(float(sys.argv[2]))
         mday  = int(float(sys.argv[3]))
+    else:
+        year  = ''
+        month = ''
+        mday  = ''
 
     if test == 0:
         find_focal_temp_peaks(year, month, mday)

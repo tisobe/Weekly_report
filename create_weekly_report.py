@@ -684,12 +684,12 @@ def run_bad_pix_and_photon(outdir):
 def run_focal_temp_data_new():
     """
     read output of find_focal_temp_peaks.py and get focal temp information
-    input:  none, but read '/mta/Script/Weekly/Focal/focal_temp_list'
+    input:  none, but read '/data/mta/Script/Weekly/Focal/focal_temp_list'
     output: fcnt    --- number of peaks observed
             fdata   --- table input
     """
     
-    f    = open('/mta/Script/Weekly/Focal/focal_temp_list', 'r')
+    f    = open('/data/mta/Script/Weekly/Focal/focal_temp_list', 'r')
     data = [lines.strip() for line in f.readlines()]
     f.close()
 
