@@ -6,7 +6,7 @@
 #                                                                                                           #
 #           author: t. isobe (tisobe@cfa.harvard.edu)                                                       #
 #                                                                                                           #
-#           Last Update: Sep 16, 2015                                                                       #
+#           Last Update: Feb 01, 2016                                                                       #
 #                                                                                                           #
 #############################################################################################################
 
@@ -90,6 +90,8 @@ def create_weekly_report(date, year, debug = 0):
     if debug != 0:
         os.system('mkdir /data/mta/Script/Weekly/Test/')
         odir = '/data/mta/Script/Weekly/Test/'
+    else:
+        odir = '/data/mta4/www/REPORTS/'
 
     oned  = 86400
 
@@ -109,14 +111,22 @@ def create_weekly_report(date, year, debug = 0):
     stop = tcnv.convertDateToCTime(year, mon, day, 0, 0, 0)
 
     day_n = stop - 7 * oned
-    tout  = tcnv.axTimeMTA(day_n)
-    ttemp = re.split(':', tout)
-    iru_start  = str(ttemp[0]) + '_' + str(ttemp[1])
+#    tout  = tcnv.axTimeMTA(day_n)
+#    ttemp = re.split(':', tout)
+#    iru_start  = str(ttemp[0]) + '_' + str(ttemp[1])
 
     day0  = stop - 6 * oned
     lday0 = stime_to_ddate(day0)
     sday0 = sdate_to_ldate(lday0)
     start = day0
+
+    tout  = tcnv.axTimeMTA(day0)
+    ttemp = re.split(':', tout)
+    iru_start  = str(ttemp[0]) + '_' + str(ttemp[1])
+#
+#---  year of the beginning of the period; could be different from that of the end
+#
+    byear      = ttemp[0]    
 
     day1  = stop - 5 * oned
     lday1 = stime_to_ddate(day1)
@@ -135,13 +145,14 @@ def create_weekly_report(date, year, debug = 0):
     day5  = stop - 1 * oned
     lday5 = stime_to_ddate(day5)
 
-    tout  = tcnv.axTimeMTA(day5)
-    ttemp = re.split(':', tout)
-    iru_stop    = '_' + str(ttemp[1])
-
     day6  = stop 
     lday6 = stime_to_ddate(day6)
     sday6 = sdate_to_ldate(lday6)
+
+    #tout  = tcnv.axTimeMTA(day5)
+    tout  = tcnv.axTimeMTA(day6)
+    ttemp = re.split(':', tout)
+    iru_stop    = '_' + str(ttemp[1])
 
     day7  = stop + 1 * oned
     lday7 = stime_to_ddate(day7)
@@ -334,8 +345,19 @@ def create_weekly_report(date, year, debug = 0):
     input = input.replace('#PREVREPORT#', atemp)
 
     atemp = re.split('/', last_trend_date)
-    lmon  = tcnv.changeMonthFormat(int(float(atemp[0])))
+    pmon  = int(float(atemp[0]))
+    lmon  = tcnv.changeMonthFormat(pmon)
     line  = lmon + ' ' + atemp[1]
+#
+#--- the previous report could be from the last year
+#
+    ryear = syear
+    if mon < pmon:
+        ryear = year -1
+        ryear = str(ryear)
+
+    input = input.replace('#RYEAR#',      ryear)
+
     input = input.replace('#PREVDATE#',   line)
 
     atitle = str(title)
@@ -363,7 +385,8 @@ def create_weekly_report(date, year, debug = 0):
 #
 #--- run to get focal temp fits files
 #
-    [fcnt, fdata] = run_focal_temp_data(outdir, start, stop, fptemp)
+#    [fcnt, fdata] = run_focal_temp_data(outdir, start, stop, fptemp)
+    [fcnt, fdata] = run_focal_temp_data_new()
 
     input = input.replace('#TEMPPEAK#', str(fcnt))
     input = input.replace('#TEMPLIST#', fdata)
@@ -386,6 +409,8 @@ def create_weekly_report(date, year, debug = 0):
 #
 #--- telem data
 #
+    update_weekly_telem(year, byear, mon)
+
     tdata = run_telem_data(telem_command, daylist, outdir)
     input = input.replace('TELEM_TABLE', tdata)
 #
@@ -651,6 +676,30 @@ def run_bad_pix_and_photon(outdir):
     cmd = 'mv photons bad_pix_list ' + outdir
     os.system(cmd)
 
+
+#----------------------------------------------------------------------------------
+#-- run_focal_temp_data_new: run focal temp script and create a plot, read a table   --
+#----------------------------------------------------------------------------------
+
+def run_focal_temp_data_new():
+    """
+    read output of find_focal_temp_peaks.py and get focal temp information
+    input:  none, but read '/mta/Script/Weekly/Focal/focal_temp_list'
+    output: fcnt    --- number of peaks observed
+            fdata   --- table input
+    """
+    
+    f    = open('/mta/Script/Weekly/Focal/focal_temp_list', 'r')
+    data = [lines.strip() for line in f.readlines()]
+    f.close()
+
+    fcnt  = len(data)
+    fdata = ''
+    for ent in data:
+        fdata = fdata + ent + '\n'
+
+    return [fcnt, fdata]
+
 #----------------------------------------------------------------------------------
 #-- run_focal_temp_data: run focal temp script and create a plot, read a table   --
 #----------------------------------------------------------------------------------
@@ -757,6 +806,77 @@ def read_focal_temp_output():
     fcnt = len(rows)
 
     return [fcnt, out]
+
+#----------------------------------------------------------------------------------
+#-- update_weekly_telem: adjusting weekly_telem.pro                              --
+#----------------------------------------------------------------------------------
+
+def update_weekly_telem(year, byear,  mon):
+    """
+    adjusting weekly_telem.pro
+        --- line 55 is the check of monthly boundary. it needs to be updated.
+    input:  year    --- year in 4 digit
+            bear    --- year of beginning date
+            mon     --- month in 
+    output: <wdir>/Telem/weekly_telem.pro updated
+    """
+#
+#--- convert year, byear, and mon to integer
+#
+    year  = int(float(year))
+    byear = int(float(byear))
+    mon   = int(float(mon))
+#
+#--- if the year changes from the beginning of the period to the end of the period
+#--- use the year of the beginning of the period and change the monthe Dec (12)
+#
+    if byear < year:
+        year = byear
+        mon  = 12
+    else:
+        mon -= 1                #--- a quick fix for the month change mon was "this month"
+                                #--- and the transition occurs from the last month to this month
+
+    mon_plus = (0, 32, 29, 32, 31, 32, 31, 32, 32, 31, 32, 31, 32)
+    nyear = year
+    nmon  = mon + 1
+    if nmon > 12:
+        nyear += 1
+        nmon   = 1
+
+    lday = mon_plus[mon]
+#
+#--- if it is a leap year, the end of Feb is 29
+#
+    if mon == 2:
+        if tcnv.isLeapYear(year):
+            lday += 1
+
+    smon = str(mon)
+    if mon < 10:
+        smon = '0' + smon
+
+    snmon = str(nmon)
+    if nmon < 10:
+        snmon = '0' + snmon
+
+    this = str(year)  + smon  + str(lday)
+    that = str(nyear) + snmon + '01'
+
+    file = tdir + 'weekly_telem_template'
+    f    = open(file, 'r')
+    data = f.read()
+    f.close()
+    data = data.replace('#THIS#', this)
+    data = data.replace('#THAT#', that)
+
+    out  = wdir + 'Telem/weekly_telem.pro'
+    fo   = open(out, 'w')
+    fo.write(data)
+    fo.close()
+
+    cmd = 'chmod 755 ' + out
+    os.system(cmd)
 
 #----------------------------------------------------------------------------------
 #-- run_telem_data: run telemetry data idl script and clean up the result        --
@@ -978,6 +1098,13 @@ def move_files(date, year, out_dir, file_name, fptemp, odir):
     """
 
     html_dir = odir + str(year)
+#
+#--- when year changes, you need to create a new output directory
+#
+    if os.path.isdir(html_dir) == False:
+        cmd = 'mkdir ' + html_dir
+        os.system(cmd)
+
     ofile    = out_dir + file_name
     giffile  = out_dir + fptemp
     cmd      = 'cp ' + ofile + ' ' + giffile + ' ' +  html_dir
@@ -1098,3 +1225,4 @@ if __name__ == "__main__":
         [date, year] = find_date_and_year_for_report()
         print "Weekly Report Date: " + str(year) + ' / ' + str(date)
         create_weekly_report(date, year, debug = debug)
+

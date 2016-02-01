@@ -182,7 +182,7 @@ TELEM_TABLE
 <H2><a href="/mta_days/mta_pcad/IRU/bias.html"> IRUs</a></H2>
 <ul>
 <li><a href="/mta_days/mta_pcad/IRU/Plots/#IRUSPAN1#_bias.gif">Gyro Bias Drift</a>		<!-- ### update ### -->
-<li><a href="/mta_days/mta_pcad/IRU/Plots/$IRUSPAN2#_hist.gif">Gyro Bias Drift Histogram</a>	<!-- ### update ### -->
+<li><a href="/mta_days/mta_pcad/IRU/Plots/#IRUSPAN2#_hist.gif">Gyro Bias Drift Histogram</a>	<!-- ### update ### -->
 </ul>
 
 
@@ -223,7 +223,7 @@ This week's focus is
 
 <p>
 Last reported on
-<a href ="/mta/REPORTS/#PREVREPORT#.html">#PREVDATE#</a>. <br>						<!-- ### update ### -->
+<a href ="/mta/REPORTS/#RYEAR#/#PREVREPORT#.html">#PREVDATE#</a>. <br>						<!-- ### update ### -->
 </p>
 
 <p>
