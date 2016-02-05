@@ -63,7 +63,7 @@ basetime = datetime.strptime('01/01/98,00:00:00', BTFMT)
 #-- find_focal_temp_peaks: estimate focal temperature peak position, temperature, and the peak width
 #-----------------------------------------------------------------------------------------------
 
-def find_focal_temp_peaks(year='', month='', mday=''):
+def find_focal_temp_peaks(year='', month='', mday='', tdiff=''):
     """
     estimate focal temperature peak position, temperature, and the peak width.
     the data are collected Thu - Thu span close to the date given.
@@ -83,7 +83,7 @@ def find_focal_temp_peaks(year='', month='', mday=''):
 #
 #--- find peak position, temperature and width of the peak
 #
-    peak_list = select_peak(time_set, temp_set)
+    peak_list = select_peak(time_set, temp_set, tdiff)
     peak_list = clean_up_peak_list(peak_list)
     peak_list = convert_to_readable(peak_list)
 #
@@ -413,21 +413,39 @@ def find_turning_point(time_set, temp_set):
 #-- select_peak: find a peak and valleys srrounding the peak                                 ---
 #-----------------------------------------------------------------------------------------------
 
-def select_peak(time_set,temp_set):
+def select_peak(time_set,temp_set,tdiff=0.3):
     """
     find a peak and valleys srrounding the peak
     input:  time_set    --- a list of time in seconds from 1998.1.1
             temp_set    --- a list of temperatures
+            tdiff       --- a criteria difference between peak and valley
     output: peak_list   --- a list  of lists of:
                 [<peak position> <peak temp> <valley position1> <valley temp> <valley position2> <valley temp>]
     """
 
     [up_list, down_list] = find_turning_point(time_set, temp_set)
 
+    fo = open('focal_peak_ref', 'w')
+    for i in range(0, len(up_list)):
+        k = up_list[i]
+        try:
+            k1 = up_list[i+1]
+        except:
+            k1 = up_list[len(up_list)-1]
+        line = '\t\t' + str(tcnv.convert_time_format(time_set[k])) + "<--->" +  str(sec1998tofracday(time_set[k])) +"<--->" + str(temp_set[k]) + '\n'
+        fo.write(line)
+        for m in down_list:
+            if time_set[m] >= time_set[k] and time_set[m] <= time_set[k1]:
+                line = '\nPEAK:' + str(tcnv.convert_time_format(time_set[m])) + "<--->" +  str(sec1998tofracday(time_set[m])) +"<--->" + str(temp_set[m]) + '\n\n'
+                fo.write(line)
+
+    fo.close()
+
     peak_list = []
 #
 #--- find a peak and it temperature
 #
+    lstart = up_list[0]
     for k in down_list:
         htemp = temp_set[k]
         for m in range(0, len(up_list)):
@@ -449,13 +467,13 @@ def select_peak(time_set,temp_set):
 #
                 for l in range(m, 0, -1):
                     diff = htemp - temp_set[up_list[l]]
-                    if diff > 1:
+                    if diff > tdiff:
                         spoint = up_list[l]
                         break
                 epoint = len(up_list) - 1
                 for l in range(m+1, len(up_list)):
                     diff = htemp - temp_set[up_list[l]]
-                    if diff > 1:
+                    if diff > tdiff:
                         epoint = up_list[l]
                         break
 
@@ -625,23 +643,31 @@ if __name__ == "__main__":
 #
 #--- if you like to specify the date, give year, month, and date
 #
-    test = 0
+    test  = 0
+    tdiff = 0.3
     if len(sys.argv) == 2:
         if sys.argv[1] == 'test':
             test = 1
             del sys.argv[1:]
         else:
-            exit(1)
+            year  = ''
+            month = ''
+            mday  = ''
+            tdiff = float(sys.argv[1])
+
     elif len(sys.argv) == 4:
         year  = int(float(sys.argv[1]))
         month = int(float(sys.argv[2]))
         mday  = int(float(sys.argv[3]))
+        tdiff = float(sys.argv[4])
+        if tdiff == '':
+            tdiff = 1
     else:
         year  = ''
         month = ''
         mday  = ''
 
     if test == 0:
-        find_focal_temp_peaks(year, month, mday)
+        find_focal_temp_peaks(year, month, mday, tdiff)
     else:
         unittest.main()
