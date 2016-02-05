@@ -385,7 +385,7 @@ def create_weekly_report(date, year, debug = 0):
 #
 #--- run to get focal temp fits files
 #
-#    [fcnt, fdata] = run_focal_temp_data(outdir, start, stop, fptemp)
+    [fcnt, fdata] = run_focal_temp_data(outdir, start, stop, fptemp)
     [fcnt, fdata] = run_focal_temp_data_new()
 
     input = input.replace('#TEMPPEAK#', str(fcnt))
@@ -690,7 +690,7 @@ def run_focal_temp_data_new():
     """
     
     f    = open('/data/mta/Script/Weekly/Focal/focal_temp_list', 'r')
-    data = [lines.strip() for line in f.readlines()]
+    data = [line.strip() for line in f.readlines()]
     f.close()
 
     fcnt  = len(data)

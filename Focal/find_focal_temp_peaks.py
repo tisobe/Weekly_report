@@ -6,7 +6,7 @@
 #                                                                                           #
 #               author: t. isobe (tisobe@cfa.harvard.edu)                                   #
 #                                                                                           #
-#               last update: Feb 01, 2016                                                   #
+#               last update: Feb 05, 2016                                                   #
 #                                                                                           #
 #############################################################################################
 
@@ -148,7 +148,7 @@ def find_time_span(year = '', month = '', mday = ''):
             yday = base - yday
 
     syear = year
-    syday = yday - 7
+    syday = yday - 8
     if syday < 0:
         syear -= 1
         if tcnv.isLeapYear(syear) == 1:
