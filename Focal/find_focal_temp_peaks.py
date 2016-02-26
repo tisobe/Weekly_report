@@ -6,7 +6,7 @@
 #                                                                                           #
 #               author: t. isobe (tisobe@cfa.harvard.edu)                                   #
 #                                                                                           #
-#               last update: Feb 05, 2016                                                   #
+#               last update: Feb 26, 2016                                                   #
 #                                                                                           #
 #############################################################################################
 
@@ -234,6 +234,9 @@ def find_focal_temp_list(start, stop):
             for line in dinput:
                 ctemp = re.split('\s+', line)
                 dtemp = re.split(':', ctemp[1])
+
+                if len(dtemp) < 2:
+                    continue
 
                 yday  = int(float(dtemp[0]))
                 htime = int(float(dtemp[1]))
