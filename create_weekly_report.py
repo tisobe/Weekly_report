@@ -6,7 +6,7 @@
 #                                                                                                           #
 #           author: t. isobe (tisobe@cfa.harvard.edu)                                                       #
 #                                                                                                           #
-#           Last Update: Feb 01, 2016                                                                       #
+#           Last Update: Mar 11, 2016                                                                       #
 #                                                                                                           #
 #############################################################################################################
 
@@ -385,6 +385,7 @@ def create_weekly_report(date, year, debug = 0):
 #
 #--- run to get focal temp fits files
 #
+    tstop = stop + 86400
     [fcnt, fdata] = run_focal_temp_data(outdir, start, stop, fptemp)
     [fcnt, fdata] = run_focal_temp_data_new()
 
@@ -719,7 +720,7 @@ def run_focal_temp_data(outdir, start, stop, fptemp):
     os.system(cmd)
 
     cmd1 = "/usr/bin/env PERL5LIB="
-    cmd2 = ' /usr/local/bin/perl ' + tdir + 'get_ftemp_data.perl ' + str(start) + ' ' +  str(stop)
+    cmd2 = ' /usr/local/bin/perl ' + outdir + 'get_ftemp_data.perl ' + str(start) + ' ' +  str(stop)
     cmd  = cmd1 + cmd2
 #
 #--- run the focal temp script to extract data
