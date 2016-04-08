@@ -6,7 +6,7 @@
 #                                                                                                           #
 #           author: t. isobe (tisobe@cfa.harvard.edu)                                                       #
 #                                                                                                           #
-#           Last Update: Mar 11, 2016                                                                       #
+#           Last Update: Apr 08, 2016                                                                       #
 #                                                                                                           #
 #############################################################################################################
 
@@ -26,7 +26,7 @@ import random
 #
 from Ska.Shell import getenv, bash
 
-ascdsenv = getenv('source /home/ascds/.ascrc -r release', shell='tcsh')
+ascdsenv = getenv('source /home/ascds/.ascrc -r release;  source /home/mta/bin/reset_param ', shell='tcsh')
 ascdsenv['IDL_PATH'] = '+/usr/local/rsi/user_contrib/astron_Oct09/pro:+/home/mta/IDL:/home/nadams/pros:+/data/swolk/idl_libs:/home/mta/IDL/tara:widget_tools:utilities:event_browser'
 ascdsenv2 = getenv('source /proj/sot/ska/bin/ska_envs.csh', shell='tcsh')
 ascdsenv2['IDL_PATH'] = '+/usr/local/rsi/user_contrib/astron_Oct09/pro:+/home/mta/IDL:/home/nadams/pros:+/data/swolk/idl_libs:/home/mta/IDL/tara:widget_tools:utilities:event_browser'
@@ -719,16 +719,17 @@ def run_focal_temp_data(outdir, start, stop, fptemp):
     cmd  = 'cp -f Templates/test .'
     os.system(cmd)
 
-    cmd1 = "/usr/bin/env PERL5LIB="
-    cmd2 = ' /usr/local/bin/perl ' + outdir + 'get_ftemp_data.perl ' + str(start) + ' ' +  str(stop)
+    cmd1 = '/usr/bin/env PERL5LIB="" '
+    #cmd2 = ' source /home/mta/bin/reset_param ; '
+    cmd2 =  ' /usr/local/bin/perl ' + outdir + 'get_ftemp_data.perl ' + str(start) + ' ' +  str(stop)
     cmd  = cmd1 + cmd2
 #
 #--- run the focal temp script to extract data
 #
     bash(cmd,  env=ascdsenv)
 
-#    cmd = 'mv *fits ' + outdir
-#    os.system(cmd)
+    cmd = 'cp -f *fits ./Focal/.'
+    os.system(cmd)
 
     cmd = 'rm ./test'
     os.system(cmd)
@@ -744,7 +745,7 @@ def run_focal_temp_data(outdir, start, stop, fptemp):
 #
     bash(cmd,  env=ascdsenv2)
 
-    cmd = 'rm -rf ./Focal/*fits '
+    cmd = 'mv -f ./Focal/*fits ' + outdir 
     os.system(cmd)
 
     cmd = 'mv ./Focal/*.gif ' + outdir + fptemp
