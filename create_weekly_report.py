@@ -6,7 +6,7 @@
 #                                                                                                           #
 #           author: t. isobe (tisobe@cfa.harvard.edu)                                                       #
 #                                                                                                           #
-#           Last Update: Apr 08, 2016                                                                       #
+#           Last Update: May 27, 2016                                                                       #
 #                                                                                                           #
 #############################################################################################################
 
@@ -115,12 +115,13 @@ def create_weekly_report(date, year, debug = 0):
 #    ttemp = re.split(':', tout)
 #    iru_start  = str(ttemp[0]) + '_' + str(ttemp[1])
 
-    day0  = stop - 6 * oned
+    day01 = stop - 6 * oned
+    day0  = stop - 7 * oned
     lday0 = stime_to_ddate(day0)
     sday0 = sdate_to_ldate(lday0)
     start = day0
 
-    tout  = tcnv.axTimeMTA(day0)
+    tout  = tcnv.axTimeMTA(day01)
     ttemp = re.split(':', tout)
     iru_start  = str(ttemp[0]) + '_' + str(ttemp[1])
 #

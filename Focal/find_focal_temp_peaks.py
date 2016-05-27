@@ -6,7 +6,7 @@
 #                                                                                           #
 #               author: t. isobe (tisobe@cfa.harvard.edu)                                   #
 #                                                                                           #
-#               last update: Feb 26, 2016                                                   #
+#               last update: May 27, 2016                                                   #
 #                                                                                           #
 #############################################################################################
 
@@ -136,10 +136,11 @@ def find_time_span(year = '', month = '', mday = ''):
         wday  = tlist[6]
         yday  = tlist[7]
 #
-#--- find the differnce to Thursday. wday starts on Monday (0)
+#--- find the differnce to Wednesday (Thursday). wday starts on Monday (0)
 #--- and set data collect date span
 #
-    diff  = 4 - wday
+    #diff  = 4 - wday
+    diff  = 3 - wday
 
     if diff != 0:
         yday += diff
