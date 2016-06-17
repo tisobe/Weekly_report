@@ -6,7 +6,7 @@
 #                                                                                                           #
 #           author: t. isobe (tisobe@cfa.harvard.edu)                                                       #
 #                                                                                                           #
-#           Last Update: May 27, 2016                                                                       #
+#           Last Update: Jun 17, 2016                                                                       #
 #                                                                                                           #
 #############################################################################################################
 
@@ -120,6 +120,7 @@ def create_weekly_report(date, year, debug = 0):
     lday0 = stime_to_ddate(day0)
     sday0 = sdate_to_ldate(lday0)
     start = day0
+    lday1 = stime_to_ddate(day01)
 
     tout  = tcnv.axTimeMTA(day01)
     ttemp = re.split(':', tout)
@@ -167,7 +168,7 @@ def create_weekly_report(date, year, debug = 0):
 #
 #--- title
 #
-    titledate     = lday0 + ' - ' + lday6
+    titledate     = lday1 + ' - ' + lday6
 
     ldate         = sdate_to_ldate(lday6)
     ldate_sp      = sdate_to_ldate_with_space(lday6)
