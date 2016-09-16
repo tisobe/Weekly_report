@@ -139,8 +139,8 @@ def find_time_span(year = '', month = '', mday = ''):
 #--- find the differnce to Wednesday (Thursday). wday starts on Monday (0)
 #--- and set data collect date span
 #
-    #diff  = 4 - wday
-    diff  = 3 - wday
+    diff  = 5 - wday
+    #diff  = 3 - wday
 
     if diff != 0:
         yday += diff
@@ -150,6 +150,7 @@ def find_time_span(year = '', month = '', mday = ''):
 
     syear = year
     syday = yday - 8
+    #syday = yday - 7
     if syday < 0:
         syear -= 1
         if tcnv.isLeapYear(syear) == 1:

@@ -6,7 +6,7 @@
 #                                                                                                           #
 #           author: t. isobe (tisobe@cfa.harvard.edu)                                                       #
 #                                                                                                           #
-#           Last Update: Jun 17, 2016                                                                       #
+#           Last Update: Sep 16, 2016                                                                       #
 #                                                                                                           #
 #############################################################################################################
 
@@ -115,20 +115,24 @@ def create_weekly_report(date, year, debug = 0):
 #    ttemp = re.split(':', tout)
 #    iru_start  = str(ttemp[0]) + '_' + str(ttemp[1])
 
-    day01 = stop - 6 * oned
-    day0  = stop - 7 * oned
+    #day01 = stop - 6 * oned
+    #day0  = stop - 7 * oned
+    day01 = stop - 5 * oned
+    day0  = stop - 6 * oned
     lday0 = stime_to_ddate(day0)
     sday0 = sdate_to_ldate(lday0)
     start = day0
     lday1 = stime_to_ddate(day01)
 
-    tout  = tcnv.axTimeMTA(day01)
+    tout  = tcnv.axTimeMTA(day0)
     ttemp = re.split(':', tout)
     iru_start  = str(ttemp[0]) + '_' + str(ttemp[1])
 #
 #---  year of the beginning of the period; could be different from that of the end
 #
     byear      = ttemp[0]    
+
+    lday0 = stime_to_ddate(day0)
 
     day1  = stop - 5 * oned
     lday1 = stime_to_ddate(day1)
@@ -168,7 +172,7 @@ def create_weekly_report(date, year, debug = 0):
 #
 #--- title
 #
-    titledate     = lday1 + ' - ' + lday6
+    titledate     = lday0 + ' - ' + lday6
 
     ldate         = sdate_to_ldate(lday6)
     ldate_sp      = sdate_to_ldate_with_space(lday6)
@@ -304,8 +308,10 @@ def create_weekly_report(date, year, debug = 0):
     input = f.read()
     f.close()
 
-    input = input.replace('#START#',  str(start))
-    input = input.replace('#STOP#',   str(stop))
+    #input = input.replace('#START#',  str(start))
+    #input = input.replace('#STOP#',   str(stop))
+    input = input.replace('#START#',  str(start + 86400))
+    input = input.replace('#STOP#',   str(stop + 86400))
     ofile = outdir + 'get_ftemp_main_script'
     fo    = open(ofile, 'w')
     fo.write(input)
